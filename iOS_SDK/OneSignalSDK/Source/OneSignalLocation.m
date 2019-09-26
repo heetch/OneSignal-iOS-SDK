@@ -182,20 +182,7 @@ static OneSignalLocation* singleInstance = nil;
     float deviceOSVersion = [[[UIDevice currentDevice] systemVersion] floatValue];
     if (deviceOSVersion >= 8.0) {
         
-        //Check info plist for request descriptions
-        //LocationAlways > LocationWhenInUse > No entry (Log error)
-        //Location Always requires: Location Background Mode + NSLocationAlwaysUsageDescription
-        NSArray* backgroundModes = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"UIBackgroundModes"];
-        NSString* alwaysDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysUsageDescription"] ?: [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysAndWhenInUseUsageDescription"];
-        // use background location updates if always permission granted or prompt allowed
-        if(backgroundModes && [backgroundModes containsObject:@"location"] && alwaysDescription && (permissionStatus == 3 || prompt)) {
-            [locationManager performSelector:@selector(requestAlwaysAuthorization)];
-            if (deviceOSVersion >= 9.0) {
-                [locationManager setValue:@YES forKey:@"allowsBackgroundLocationUpdates"];
-            }
-        }
-        
-        else if([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"]) {
+        if([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"]) {
             if (permissionStatus == 0) [locationManager performSelector:@selector(requestWhenInUseAuthorization)];
         }
         
